@@ -52,6 +52,10 @@ app.post("/valentine", upload.single("photo"), async (req, res) => {
       input_image: fs.readFileSync(req.file.path), // ✅ FIXED
       size: "1024x1024"
     });
+    if (!result.data || !result.data[0].b64_json) {
+      throw new Error("Image generation failed");
+    }
+
 
     const base64 = result.data[0].b64_json;
 
