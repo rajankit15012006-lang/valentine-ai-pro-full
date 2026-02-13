@@ -94,7 +94,7 @@ btn.onclick=async()=>{
 
   canvas.toBlob(async blob=>{
     const fd=new FormData();
-    fd.append("photo",blob);
+    fd.append("photo",blob,"photo.png");
     fd.append("name",name);
 
     const res = await fetch("https://valentine-ai-pro-full.onrender.com/valentine", {
@@ -109,7 +109,7 @@ btn.onclick=async()=>{
     loading.style.display="none";
     result.src="data:image/png;base64,"+data.image;
     download.style.display="inline-block";
-  });
+  },"image/png");
 };
 
 download.onclick=()=>{
