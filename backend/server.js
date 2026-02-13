@@ -43,6 +43,7 @@ app.post("/valentine", upload.single("photo"), async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ error: "No photo uploaded" });
     }
+    const name = req.body.name || "My Valentine";
 
     const imageBytes = fs.readFileSync(req.file.path);
     const result = await openai.images.generate({
