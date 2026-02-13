@@ -4,6 +4,7 @@ import cors from "cors";
 import fs from "fs";
 import OpenAI from "openai";
 import dotenv from "dotenv";
+import fs from "fs";
 
 dotenv.config();
 
@@ -44,17 +45,19 @@ app.post("/valentine", upload.single("photo"), async (req, res) => {
       return res.status(400).json({ error: "No photo uploaded" });
     }
     const name = req.body.name || "My Valentine";
-
-    const imageBytes = fs.readFileSync(req.file.path);
-    const base64Image = imageBytes.toString("base64");
-    const result = await openai.images.generate({
+    const result = await openai.images.edit({
       model: "gpt-image-1",
+      image: fs.createReadStream(req.file.path),
       prompt: `Create a romantic valentine poster.Keep the face realistic.Add glowing hearts and roses.Add text "${name} ❤️ Me".Soft pink dreamy lighting.`,
-      image: base64Image,
       size: "1024x1024"
-    });
-    const generated = result.data[0].b64_json;
-    res.json({ image: generated });
+});
+
+const base64 = result.data[0].b64_json;
+
+fs.unlinkSync(req.file.path);
+
+res.json({ image: base64 });
+
   
 
     
