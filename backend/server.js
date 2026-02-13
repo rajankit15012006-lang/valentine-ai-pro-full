@@ -4,7 +4,6 @@ import cors from "cors";
 import fs from "fs";
 import OpenAI from "openai";
 import dotenv from "dotenv";
-import fs from "fs";
 
 dotenv.config();
 
