@@ -46,20 +46,38 @@ app.post("/valentine", upload.single("photo"), async (req, res) => {
     const name = req.body.name || "My Valentine";
 
     const imageBytes = fs.readFileSync(req.file.path);
-    const result = await openai.images.edit({
-      model: "gpt-image-1",
-      prompt: `Create a romantic valentine poster.Keep the face realistic.Add glowing hearts and roses.Add text "${name} ❤️ Me".Dreamy pink lighting.`,
-      images: [imageBytes],   // ✅ THIS IS THE CORRECT PARAM
-      size: "1024x1024"
+
+const response = await openai.responses.create({
+  model: "gpt-4.1",
+  input: [
+    {
+      role: "user",
+      content: [
+        {
+          type: "input_text",
+          text: `Create a romantic valentine poster.
+          Keep the face realistic.
+          Add glowing hearts and roses.
+          Add text "${name} ❤️ Me".
+          Soft pink dreamy lighting.`
+        },
+        {
+          type: "input_image",
+          image: imageBytes
+        }
+      ]
+    }
+  ],
+  tools: [{ type: "image_generation" }]
 });
 
+const imageBase64 =
+  response.output[0].content
+    .find(c => c.type === "output_image")
+    .image;
 
+res.json({ image: imageBase64 });
 
-    const base64 = result.data[0].b64_json;
-
-    fs.unlinkSync(req.file.path); // cleanup
-
-    res.json({ image: base64 });
 
   } catch (err) {
     console.error(err);
