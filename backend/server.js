@@ -3,6 +3,7 @@ import multer from "multer";
 import cors from "cors";
 import fs from "fs";
 import OpenAI from "openai";
+import sharp from "sharp";
 
 const app = express();
 app.use(cors());
