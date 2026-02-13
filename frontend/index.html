@@ -97,7 +97,7 @@ btn.onclick=async()=>{
     fd.append("photo",blob);
     fd.append("name",name);
 
-    const res=await fetch("https://valentine-ai-pro-full.onrender.com",{
+    const res=await fetch("https://valentine-ai-pro-full.onrender.com/valentine",{
       method:"POST",
       body:fd
     });
