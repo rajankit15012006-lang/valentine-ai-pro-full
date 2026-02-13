@@ -1,0 +1,122 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Valentine AI 💘</title>
+
+<style>
+body{
+  font-family:Arial;
+  text-align:center;
+  background:linear-gradient(135deg,#ffd6e8,#ffe6f0);
+  overflow:hidden;
+}
+h1{color:#e91e63;margin-top:40px}
+button{
+  padding:14px 30px;
+  border:none;
+  border-radius:30px;
+  background:#ff4081;
+  color:white;
+  font-size:18px;
+  cursor:pointer;
+}
+input{
+  padding:10px;
+  margin:10px;
+  border-radius:10px;
+  border:none;
+}
+#loading{display:none;font-size:20px}
+img{margin-top:20px;width:340px;border-radius:20px}
+.heart{position:fixed;top:-20px;animation:fall 6s linear infinite;}
+@keyframes fall{to{transform:translateY(110vh)}}
+</style>
+</head>
+
+<body>
+
+<h1>Be My Valentine 💖</h1>
+
+<input id="name" placeholder="Enter your name"/><br>
+<button id="btn">Take Love Selfie</button>
+
+<p id="loading">Generating love magic... 💕</p>
+
+<video id="video" autoplay playsinline style="display:none"></video>
+<canvas id="canvas" style="display:none"></canvas>
+<img id="result"/><br>
+<button id="download" style="display:none">Download Image</button>
+
+<audio id="music" src="https://cdn.pixabay.com/audio/2022/03/15/audio_8c9f1fbb90.mp3"></audio>
+
+<script>
+const btn=document.getElementById("btn");
+const video=document.getElementById("video");
+const canvas=document.getElementById("canvas");
+const result=document.getElementById("result");
+const loading=document.getElementById("loading");
+const download=document.getElementById("download");
+const music=document.getElementById("music");
+
+function hearts(){
+  for(let i=0;i<20;i++){
+    const h=document.createElement("div");
+    h.className="heart";
+    h.innerHTML="❤️";
+    h.style.left=Math.random()*100+"vw";
+    h.style.animationDuration=(3+Math.random()*3)+"s";
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(),6000);
+  }
+}
+
+btn.onclick=async()=>{
+  music.play();
+  hearts();
+
+  const name=document.getElementById("name").value || "You";
+
+  const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user"}});
+  video.srcObject=stream;
+
+  await new Promise(r=>setTimeout(r,2000));
+
+  canvas.width=video.videoWidth;
+  canvas.height=video.videoHeight;
+  canvas.getContext("2d").drawImage(video,0,0);
+
+  stream.getTracks().forEach(t=>t.stop());
+
+  loading.style.display="block";
+
+  canvas.toBlob(async blob=>{
+    const fd=new FormData();
+    fd.append("photo",blob);
+    fd.append("name",name);
+
+    const res=await fetch("https://valentine-ai-pro-full.onrender.com/valentine",{
+      method:"POST",
+      body:fd
+    });
+
+    const data=await res.json();
+
+    loading.style.display="none";
+    result.src="data:image/png;base64,"+data.image;
+    download.style.display="inline-block";
+  });
+};
+
+download.onclick=()=>{
+  const a=document.createElement("a");
+  a.href=result.src;
+  a.download="valentine.png";
+  a.click();
+};
+</script>
+
+</body>
+</html>
