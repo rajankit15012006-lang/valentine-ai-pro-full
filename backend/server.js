@@ -46,7 +46,7 @@ app.post("/valentine", upload.single("photo"), async (req, res) => {
     const name = req.body.name || "My Valentine";
 
     const imageBytes = fs.readFileSync(req.file.path);
-    const result = await openai.images.generate({
+    const result = await openai.images.edit({
       model: "gpt-image-1",
       prompt: `Create a romantic valentine poster.Keep the face realistic.Add glowing hearts and roses.Add text "${name} ❤️ Me".Dreamy pink lighting.`,
       images: [imageBytes],   // ✅ THIS IS THE CORRECT PARAM
