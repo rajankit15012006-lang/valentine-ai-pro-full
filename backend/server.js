@@ -8,7 +8,15 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const upload = multer({ dest: "uploads/" });
+const storage = multer.diskStorage({
+  destination: "uploads/",
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + ".png");  // ✅ FORCE PNG EXTENSION
+  }
+});
+
+const upload = multer({ storage });
+
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
