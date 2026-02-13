@@ -45,7 +45,7 @@ app.post("/valentine", upload.single("photo"), async (req, res) => {
     }
     const name = req.body.name || "My Valentine";
     const result = await openai.images.edit({
-      model: "gpt-image-1",
+      model: "dall-e-2",
       image: fs.createReadStream(req.file.path),
       prompt: `Create a romantic valentine poster.Keep the face realistic.Add glowing hearts and roses.Add text "${name} ❤️ Me".Soft pink dreamy lighting.`,
       size: "1024x1024"
