@@ -30,9 +30,17 @@ app.post("/valentine", upload.single("photo"), async (req, res) => {
   try {
     const name = req.body.name || "My Valentine";
 
+    const originalPath = req.file.path;
+    const pngPath = originalPath + ".png";
+
+    // Convert to real PNG
+    await sharp(originalPath)
+      .png()
+      .toFile(pngPath);
+
     const result = await openai.images.edit({
       model: "dall-e-2",
-      image: fs.createReadStream(req.file.path),
+      image: fs.createReadStream(pngPath),
       prompt: `Create a romantic valentine poster.
       Keep face realistic.
       Add text "${name} ❤️ Me".`,
@@ -41,15 +49,18 @@ app.post("/valentine", upload.single("photo"), async (req, res) => {
 
     const base64 = result.data[0].b64_json;
 
-    fs.unlinkSync(req.file.path);
+    // Cleanup files
+    fs.unlinkSync(originalPath);
+    fs.unlinkSync(pngPath);
 
     res.json({ image: base64 });
 
   } catch (err) {
-    console.error(err);
+    console.error("ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 });
+
 
 app.listen(process.env.PORT || 3000, () => {
   console.log("Server running");
