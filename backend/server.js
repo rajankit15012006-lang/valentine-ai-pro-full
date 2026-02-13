@@ -4,6 +4,7 @@ import cors from "cors";
 import fs from "fs";
 import OpenAI from "openai";
 import dotenv from "dotenv";
+import sharp from "sharp";
 
 dotenv.config();
 
@@ -13,6 +14,15 @@ app.use(cors({
   origin: "*",
   methods: ["GET", "POST"]
 }));
+
+
+
+const pngPath = req.file.path + ".png";
+
+// Convert uploaded image to PNG
+await sharp(req.file.path)
+  .png()
+  .toFile(pngPath);
 
 app.use(express.json());
 
