@@ -44,17 +44,14 @@ app.post("/valentine", upload.single("photo"), async (req, res) => {
       return res.status(400).json({ error: "No photo uploaded" });
     }
 
-    const name = req.body.name || "My Valentine";
-
+    const imageBytes = fs.readFileSync(req.file.path);
     const result = await openai.images.generate({
       model: "gpt-image-1",
-      prompt: `Create a cute romantic valentine poster with hearts, roses, soft pink lighting. Add text saying "${name} ❤️ Me". Dreamy glow, Instagram aesthetic.`,
-      input_image: fs.readFileSync(req.file.path), // ✅ FIXED
+      prompt: `Create a romantic valentine poster.Keep the face realistic.Add glowing hearts and roses.Add text "${name} ❤️ Me".Dreamy pink lighting.`,
+      images: [imageBytes],   // ✅ THIS IS THE CORRECT PARAM
       size: "1024x1024"
-    });
-    if (!result.data || !result.data[0].b64_json) {
-      throw new Error("Image generation failed");
-    }
+});
+
 
 
     const base64 = result.data[0].b64_json;
